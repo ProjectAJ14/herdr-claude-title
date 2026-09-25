@@ -1,0 +1,6 @@
+/herdr-claude-title
+/herdr-claude-title.exe
+*.test
+*.out
+.DS_Store
+.claude/settings.local.json

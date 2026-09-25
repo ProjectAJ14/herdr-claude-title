@@ -1,0 +1,14 @@
+name: Feature request
+description: A naming rule, setting or Claude behaviour you would like
+labels: [enhancement]
+body:
+  - type: textarea
+    id: want
+    attributes:
+      label: What you would like the tab to say, and when
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why the current name falls short

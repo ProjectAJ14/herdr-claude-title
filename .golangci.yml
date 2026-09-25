@@ -1,0 +1,68 @@
+version: "2"
+
+run:
+  tests: true
+  timeout: 10m
+
+linters:
+  default: standard
+  enable:
+    - bidichk         # bidirectional runes that make source read as it is not
+    - containedctx    # a context.Context smuggled inside a struct
+    - contextcheck    # a function that drops the context it was handed
+    - depguard        # the dependency floor, below
+    - durationcheck   # a duration multiplied by a duration
+    - errorlint       # errors compared with == or formatted with %v
+    - forcetypeassert # a type assertion that panics instead of reporting
+    - gocritic        # correctness and style grab-bag
+    - gosec           # the usual security mistakes
+    - misspell
+    - modernize       # idioms newer Go supersedes
+    - musttag         # a struct reaching encoding/json without tags
+    - nilerr          # nil returned although the error was not
+    - noctx           # a call made without the context it could take
+    - nolintlint      # a //nolint must name its linter and say why
+    - sloglint        # log/slog used as intended
+    - thelper
+    - unconvert
+    - unparam
+    - usetesting
+  disable:
+    # Silence is deliberate here: persisting ownership and titles, and
+    # closing sockets, fail quietly on purpose and each place says so.
+    - errcheck
+
+  settings:
+    depguard:
+      rules:
+        everywhere:
+          # Herdr builds the plugin at install time with Go 1.24, so a new
+          # third-party import is a decision, not an accident.
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/ProjectAJ14/herdr-claude-title
+            - github.com/rivo/uniseg
+        no-subprocess:
+          # Only the summarizer runs a program, and only `claude` with fixed
+          # arguments; untrusted text travels on stdin, never argv or a shell.
+          files:
+            - "!**/internal/summarizer/**"
+          deny:
+            - pkg: os/exec
+              desc: only internal/summarizer may start a process
+    sloglint:
+      kv-only: true
+
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters: [gosec, noctx]
+
+formatters:
+  enable:
+    - gofmt
+    - golines
+  settings:
+    golines:
+      max-len: 120

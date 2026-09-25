@@ -1,0 +1,30 @@
+name: Bug report
+description: A tab, pane or workspace was named wrong, or the plugin misbehaved
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+      placeholder: "Tab read `1 · Shell` while Claude Code was fixing the login test"
+    validations:
+      required: true
+  - type: textarea
+    id: preview
+    attributes:
+      label: Output of `./herdr-claude-title preview`
+      description: Run it in the plugin directory inside a Herdr pane. It renames nothing.
+      render: text
+  - type: textarea
+    id: logs
+    attributes:
+      label: Plugin log
+      description: "`herdr plugin log list`, ideally with HERDR_CLAUDE_TITLE_LOG_LEVEL=debug"
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: "herdr 0.9.1, claude 2.1.282, macOS 26"
+    validations:
+      required: true
