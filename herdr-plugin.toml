@@ -1,0 +1,36 @@
+# Herdr Claude Title plugin manifest.
+
+id = "herdr.claude-title"
+name = "Claude Title"
+version = "0.1.0"
+min_herdr_version = "0.8.2"
+description = "Names tabs, panes and workspaces after the work in them, with Claude-written titles for Claude Code sessions"
+platforms = ["linux", "macos", "windows"]
+
+# Built at install time; Go 1.24+ is the only requirement.
+[[build]]
+platforms = ["linux", "macos"]
+command = ["go", "build", "-o", "herdr-claude-title", "./cmd/herdr-claude-title"]
+
+[[build]]
+platforms = ["windows"]
+command = ["go", "build", "-o", "herdr-claude-title.exe", "./cmd/herdr-claude-title"]
+
+# A one-shot launch: the process keeps itself alive. Herdr runs this at every
+# server start and live handoff, and never stops what it started.
+[[startup]]
+platforms = ["linux", "macos"]
+command = ["./herdr-claude-title"]
+
+[[startup]]
+platforms = ["windows"]
+command = ["./herdr-claude-title.exe"]
+
+# One entry for every platform: Herdr rejects a duplicate action id even when
+# the platforms differ, and Herdr 0.9.0+ on Windows appends `.exe` itself.
+[[actions]]
+id = "restart"
+title = "Claude Title: restart"
+description = "Start a fresh Claude Title in place of the running one"
+contexts = ["global"]
+command = ["./herdr-claude-title", "restart"]
