@@ -88,8 +88,11 @@ func TestPaths(t *testing.T) {
 	xdg := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", xdg)
 
-	if got := FilePath(ConfigFileName); filepath.Dir(filepath.Dir(got)) == xdg {
-		t.Errorf("a file nobody holds goes in the last dir, not XDG: %q", got)
+	// A file nobody holds yet goes in the platform dir — which on Linux is
+	// $XDG_CONFIG_HOME itself, and on macOS Application Support.
+	platform, _ := os.UserConfigDir()
+	if got := FilePath(ConfigFileName); got != filepath.Join(platform, dirName, ConfigFileName) {
+		t.Errorf("a new file goes in the platform dir %q, got %q", platform, got)
 	}
 
 	os.MkdirAll(filepath.Join(xdg, dirName), 0o700)
