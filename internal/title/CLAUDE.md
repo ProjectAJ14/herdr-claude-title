@@ -27,7 +27,8 @@ Claude Code's own generic ai-title, and the summary is the better answer.
 - **Everything is untrusted.** `Sanitize` strips ANSI, controls and format
   characters (bidi overrides, zero-width spaces — except the ZWJ emoji need),
   normalises separators so a value cannot forge structure, and cuts by **columns
-  and grapheme clusters**, never runes. It is idempotent. `Meaningful` refuses
+  and grapheme clusters**, never runes, and back to the last whole word when
+  there is one (a half word like `I r` reads as noise). It is idempotent. `Meaningful` refuses
   locations, program names and shell prompts. A Claude title goes through both.
 - **What the row above says is dropped**: a tab drops what its workspace row
   says; a pane drops what its tab's *parts* (not finished label) say. The

@@ -21,6 +21,9 @@ func TestSanitize(t *testing.T) {
 		{"cuts by columns, not runes", "日本語テキスト", 6, "日本語"},
 		{"keeps emoji clusters whole", "work 👨‍👩‍👧‍👦", 6, "work"},
 		{"no separator left after a cut", "abcdefg › hij", 9, "abcdefg"},
+		{"cuts at a word", "Explaner artifact : I really like", 26, "Explaner artifact : I"},
+		{"keeps a word ending at the limit", "fix login page", 9, "fix login"},
+		{"one long word cuts hard", "abcdefghij", 4, "abcd"},
 	}
 
 	for _, c := range cases {

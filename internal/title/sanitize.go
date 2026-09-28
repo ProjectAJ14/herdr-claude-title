@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/rivo/uniseg"
 )
@@ -74,6 +75,13 @@ func fitColumns(s string, maxColumns int) string {
 	head, rest := splitAtColumns(s, maxColumns)
 	if rest == "" {
 		return s
+	}
+
+	// End on a whole word ("I r" reads as noise); one long word still cuts hard.
+	if next, _ := utf8.DecodeRuneInString(rest); !unicode.IsSpace(next) {
+		if cut := strings.LastIndexFunc(head, unicode.IsSpace); cut > 0 {
+			head = head[:cut]
+		}
 	}
 
 	return strings.TrimSpace(strings.TrimRight(head, edgeTrim))

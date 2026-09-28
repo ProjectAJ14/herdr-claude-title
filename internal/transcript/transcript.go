@@ -39,7 +39,7 @@ type Conversation struct {
 	// AITitle is the title Claude Code generated itself; the last one wins.
 	AITitle string
 	// FirstPrompt is the first line the user typed; a slash command reads as
-	// the command and its arguments (`/code-review spec.md` → `code-review spec.md`).
+	// its arguments, else its name (`/wt fix login` → `fix login`, `/review` → `review`).
 	FirstPrompt string
 	// RecentPrompts are the latest prompts the user typed, oldest first.
 	RecentPrompts []string
@@ -308,15 +308,15 @@ var (
 	markupPattern = regexp.MustCompile(`(?s)<[a-z][a-z-]*>.*?</[a-z][a-z-]*>`)
 )
 
-// promptText is what the user typed, with a slash command read as the command
-// and its first line of arguments.
+// promptText is what the user typed, with a slash command read as its first
+// line of arguments: the name (`wt`) says how, not what, and is noise in a title.
 func promptText(content json.RawMessage) string {
 	text := contentText(content)
 
 	if command := commandPattern.FindStringSubmatch(text); command != nil {
 		if args := argsPattern.FindStringSubmatch(text); args != nil {
 			if first, _, _ := strings.Cut(strings.TrimSpace(args[1]), "\n"); strings.TrimSpace(first) != "" {
-				return command[1] + " " + strings.TrimSpace(first)
+				return strings.TrimSpace(first)
 			}
 		}
 

@@ -32,7 +32,7 @@ func TestReadsPromptsTitlesAndDirIncrementally(t *testing.T) {
 	r := NewReader(home)
 
 	c := r.Read(session, "/work/api")
-	if c.FirstPrompt != "code-review spec.md" || c.PromptCount != 2 || c.AITitle != "Login test fix" ||
+	if c.FirstPrompt != "spec.md" || c.PromptCount != 2 || c.AITitle != "Login test fix" ||
 		c.WorkingDir != "/work/api/.claude/worktrees/x" || c.Topic() != "Login test fix" {
 		t.Fatalf("got %+v", c)
 	}
