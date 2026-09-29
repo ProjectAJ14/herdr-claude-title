@@ -46,7 +46,7 @@ Claude Code's own generic ai-title, and the summary is the better answer.
   process would rewrite itself at every prompt. Long rows drop parts from the
   **front** (`FormatKeepingEnd`) — a sidebar column of rows starting the same
   would otherwise all read the same.
-- **A tab reads `New` until ssh or a higher source answers**: a tab answered
-  only by `directory`/`branch` would repeat the workspace row. Panes keep the place.
+- **A tab reads `New` until it has an activity** (or is an ssh session): a bare
+  shell or an unprompted agent would only repeat the workspace row. Panes keep the place.
 - **The tab number is a decorator (`WithTabNumber`), not a source**, counted
   against the width, and dropped before the name when the bar is too narrow.
