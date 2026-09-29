@@ -21,8 +21,8 @@ const (
 // Fallback names a pane nothing else can name.
 const Fallback = "Shell"
 
-// NewTab names a tab whose speaker says only where it is: the workspace row
-// already names the project, so the tab reads as fresh until work starts.
+// NewTab names a tab with no activity yet (a bare shell, an agent not yet
+// prompted): the workspace row already names the project. ssh is the exception.
 const NewTab = "New"
 
 // Parts are what a title says, read from the general to the particular:
@@ -98,7 +98,7 @@ func ForWorkspaces(opts Options) *Namer {
 // NameTab names a tab after its speaker, minus what the workspace row says.
 func (n *Namer) NameTab(tab session.Tab) Decision {
 	found := n.collect(tab.Speaker)
-	if found.rank < RankSSH {
+	if found.parts.Activity == "" && found.source != (remoteHost{}).Name() {
 		return Decision{Label: fitColumns(NewTab, n.opts.MaxColumns), Rank: RankFallback, Source: "fallback"}
 	}
 
