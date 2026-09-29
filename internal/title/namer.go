@@ -21,6 +21,10 @@ const (
 // Fallback names a pane nothing else can name.
 const Fallback = "Shell"
 
+// NewTab names a tab whose speaker says only where it is: the workspace row
+// already names the project, so the tab reads as fresh until work starts.
+const NewTab = "New"
+
 // Parts are what a title says, read from the general to the particular:
 // "<place> › <branch> › <agent> › <activity>".
 type Parts struct {
@@ -93,7 +97,12 @@ func ForWorkspaces(opts Options) *Namer {
 
 // NameTab names a tab after its speaker, minus what the workspace row says.
 func (n *Namer) NameTab(tab session.Tab) Decision {
-	return n.assemble(n.collect(tab.Speaker), tab.WorkspaceLabel)
+	found := n.collect(tab.Speaker)
+	if found.rank < RankSSH {
+		return Decision{Label: fitColumns(NewTab, n.opts.MaxColumns), Rank: RankFallback, Source: "fallback"}
+	}
+
+	return n.assemble(found, tab.WorkspaceLabel)
 }
 
 // NamePanes names each pane (in tab.Panes order) by what tells it from the

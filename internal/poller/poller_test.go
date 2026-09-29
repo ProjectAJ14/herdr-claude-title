@@ -149,7 +149,7 @@ func TestNamesThenLeavesAUserRenameAlone(t *testing.T) {
 	p.Poll(ctx, h)
 	p.Poll(ctx, h) // settled: nothing new to say
 
-	if len(h.renames) != 2 || h.renames[0] != "tab:1 · api" || h.renames[1] != "pane:api" {
+	if len(h.renames) != 2 || h.renames[0] != "tab:1 · New" || h.renames[1] != "pane:api" {
 		t.Fatalf("renames = %q", h.renames)
 	}
 
@@ -164,7 +164,7 @@ func TestNamesThenLeavesAUserRenameAlone(t *testing.T) {
 	h.setTabLabel("") // clearing hands it back
 	p.Poll(ctx, h)
 
-	if last := h.renames[len(h.renames)-1]; last != "tab:1 · api" {
+	if last := h.renames[len(h.renames)-1]; last != "tab:1 · New" {
 		t.Fatalf("a cleared tab was not taken back: %q", h.renames)
 	}
 }
@@ -284,7 +284,7 @@ func TestRenameFailures(t *testing.T) {
 	p = newPoller(nil)
 	p.Poll(ctx, late)
 	late.fail = nil
-	late.setTabLabel("1 · api")
+	late.setTabLabel("1 · New")
 	late.snap.Tabs = append(late.snap.Tabs, herdr.Tab{ID: "t0", WorkspaceID: "w1", Label: "1"})
 	late.snap.Tabs[0], late.snap.Tabs[1] = late.snap.Tabs[1], late.snap.Tabs[0] // t1 slid to position 2
 	p.Poll(ctx, late)
@@ -293,7 +293,7 @@ func TestRenameFailures(t *testing.T) {
 		t.Fatal("a late-landing rename must not be claimed as the user's")
 	}
 
-	if got := late.renamed(); !slices.Contains(got, "tab:2 · api") {
+	if got := late.renamed(); !slices.Contains(got, "tab:2 · New") {
 		t.Errorf("the tab should be renamed on to its new position: %q", got)
 	}
 }
@@ -449,7 +449,7 @@ func TestBranchesAreReadWhenOn(t *testing.T) {
 
 	h := oneTabSession()
 	h.snap.Workspaces[0].Label = "elsewhere"
-	h.processes = map[string][]herdr.Process{"p1": {{Name: "zsh", CWD: repo}}}
+	h.processes = map[string][]herdr.Process{"p1": {{Name: "zsh", CWD: repo}, {Name: "nvim", CWD: repo}}}
 
 	tabs := title.ForTabs(title.Options{MaxColumns: 60, BranchMaxColumns: 12})
 	p := newPoller(nil)
@@ -457,7 +457,7 @@ func TestBranchesAreReadWhenOn(t *testing.T) {
 	p.reader.opts.ReadBranches = true
 	p.Poll(context.Background(), h)
 
-	if got := h.renamed(); len(got) != 1 || got[0] != "tab:"+filepath.Base(repo)+" › feat/oauth" {
+	if got := h.renamed(); len(got) != 1 || got[0] != "tab:"+filepath.Base(repo)+" › feat/oauth › nvim" {
 		t.Fatalf("renames = %q", got)
 	}
 }

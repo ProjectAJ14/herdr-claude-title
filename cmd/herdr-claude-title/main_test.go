@@ -22,7 +22,7 @@ func TestNamersFollowTheSettings(t *testing.T) {
 	}
 
 	tab := session.Tab{Position: 2, Speaker: &session.Pane{ID: "p", Dir: "/work/api"}}
-	if got := n.Tabs.NameTab(tab).Label; got != "2 · api" {
+	if got := n.Tabs.NameTab(tab).Label; got != "2 · New" {
 		t.Errorf("numbered tab = %q", got)
 	}
 
@@ -34,7 +34,7 @@ func TestNamersFollowTheSettings(t *testing.T) {
 		t.Error("panes off, and workspaces need a renames file")
 	}
 
-	if got := n.Tabs.NameTab(tab).Label; got != "api" {
+	if got := n.Tabs.NameTab(tab).Label; got != "New" {
 		t.Errorf("unnumbered tab = %q", got)
 	}
 }
