@@ -137,8 +137,21 @@ func TestBranchFromTheAgentsWorktree(t *testing.T) {
 
 func TestFallbackAndNumber(t *testing.T) {
 	namer := WithTabNumber(ForTabs(Options{MaxColumns: 30}), 30)
-	if d := namer.NameTab(session.Tab{Position: 3, Speaker: &session.Pane{ID: "p"}}); d.Label != "3 · Shell" {
+	if d := namer.NameTab(session.Tab{Position: 3, Speaker: &session.Pane{ID: "p"}}); d.Label != "3 · New" {
 		t.Errorf("got %q", d.Label)
+	}
+}
+
+func TestATabWithOnlyItsDirectoryIsNew(t *testing.T) {
+	pane := &session.Pane{ID: "p", Dir: "/work/herdr-claude-title"}
+	if d := ForTabs(Options{}).NameTab(session.Tab{Speaker: pane}); d.Label != "New" {
+		t.Errorf("tab: got %q", d.Label)
+	}
+
+	if got := ForTabs(
+		Options{},
+	).NamePanes(session.Tab{Speaker: pane, Panes: []*session.Pane{pane}}); got[0].Label != "herdr-claude-title" {
+		t.Errorf("pane keeps its directory, got %q", got[0].Label)
 	}
 }
 
@@ -179,8 +192,8 @@ func TestSSHPanesNameTheHost(t *testing.T) {
 	}{
 		{sshPane("ssh deploy@productio", "ssh", "deploy@prod-01"), "ssh › prod-01"}, // local echo dropped, no branch
 		{sshPane("Restart workers", "ssh", "-p", "2222", "prod-01"), "ssh › prod-01 › Restart workers"},
-		{sshPane("", "ssh", "-p"), "ssh"},                                      // unreadable host
-		{sshPane("", "ssh", "-N", "-L", "80:x:80", "bastion"), "api › feat/x"}, // a tunnel is not remote work
+		{sshPane("", "ssh", "-p"), "ssh"},                             // unreadable host
+		{sshPane("", "ssh", "-N", "-L", "80:x:80", "bastion"), "New"}, // a tunnel is not remote work
 	}
 
 	for _, c := range cases {
@@ -305,20 +318,20 @@ func TestANarrowBarDropsTheNumberBeforeTheName(t *testing.T) {
 	if d := WithTabNumber(
 		ForTabs(Options{MaxColumns: 4}),
 		4,
-	).NameTab(session.Tab{Position: 12, Speaker: &session.Pane{ID: "p"}}); d.Label != "Shel" {
+	).NameTab(session.Tab{Position: 12, Speaker: &session.Pane{ID: "p"}}); d.Label != "New" {
 		t.Errorf("got %q", d.Label)
 	}
 
 	if d := WithTabNumber(
 		ForTabs(Options{}),
 		0,
-	).NameTab(session.Tab{Position: 1, Speaker: &session.Pane{ID: "p"}}); d.Label != "1 · Shell" {
+	).NameTab(session.Tab{Position: 1, Speaker: &session.Pane{ID: "p"}}); d.Label != "1 · New" {
 		t.Errorf("zero columns takes the default, got %q", d.Label)
 	}
 }
 
 func TestTheFallbackFitsTheWidthToo(t *testing.T) {
-	if d := ForTabs(Options{MaxColumns: 3}).NameTab(session.Tab{Speaker: &session.Pane{ID: "p"}}); d.Label != "She" {
+	if d := ForTabs(Options{MaxColumns: 2}).NameTab(session.Tab{Speaker: &session.Pane{ID: "p"}}); d.Label != "Ne" {
 		t.Errorf("got %q", d.Label)
 	}
 }
