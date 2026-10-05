@@ -26,7 +26,12 @@ it: `Title()` returns the cached title and queues the session when it is due.
   `title.Sanitize` + `Meaningful` + the column cut then bound.
 - `--no-session-persistence`: no transcript of its own for Herdr to find.
 - `--system-prompt` replaces the default prompt (~3.7k → ~1.4k input tokens).
-- `--json-schema` with `maxLength`: the answer is `structured_output.title`.
+- `--json-schema` with `maxLength`: the answer is `structured_output.title`,
+  and **only** that. When the model chats instead ("I appreciate the
+  instruction, but I cannot see the image…") there is no structured output;
+  falling back to `result` once put that sentence on a tab. It is a failure now.
+- `isTitle` (≤6 words, one line) gates every answer and every title loaded from
+  `claude-titles.json`, so a bad title already on disk is dropped at start.
 - Prompts go on **stdin**, never argv. `HERDR_*` is stripped from the child's
   environment, and it runs in the temp dir.
 - `FindClaude` looks past PATH (`~/.local/bin`, `~/.claude/local`, Homebrew):

@@ -261,3 +261,16 @@ func TestStoppedClosesWhenRunReturns(t *testing.T) {
 		t.Fatal("Stopped must be closed after Run returns")
 	}
 }
+
+func TestIsTitle(t *testing.T) {
+	for title, want := range map[string]bool{
+		"Retry logic": true,
+		"":            false,
+		"I appreciate the instruction, but I need more": false,
+		"Fix\nthe bug": false,
+	} {
+		if got := isTitle(title); got != want {
+			t.Errorf("isTitle(%q) = %v, want %v", title, got, want)
+		}
+	}
+}

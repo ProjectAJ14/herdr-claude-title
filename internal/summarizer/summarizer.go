@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"maps"
 	"os"
@@ -179,8 +180,8 @@ func (s *Summarizer) handle(ctx context.Context, j job) {
 	case errors.Is(err, ErrUnavailable):
 		s.unavailable = true
 		s.log.Warn("claude titles are off for this run", "error", err)
-	case err == nil && title == "":
-		err = errors.New("claude answered with an empty title")
+	case err == nil && !isTitle(title):
+		err = fmt.Errorf("claude answered %q, which is not a title", title)
 		fallthrough
 	case err != nil:
 		rec.retryAt = s.now().Add(s.opts.RetryAfterFailure)
@@ -258,6 +259,15 @@ func tidy(title string) string {
 	return strings.TrimSpace(strings.TrimRight(title, ".!"))
 }
 
+// isTitle rejects what a sentence slipped through as: a title is a few words
+// on one line, and the prompt asks for 2 to 5.
+func isTitle(title string) bool {
+	words := len(strings.Fields(title))
+	return words > 0 && words <= maxTitleWords && !strings.ContainsAny(title, "\n\r")
+}
+
+const maxTitleWords = 6
+
 func load(path string) map[string]*record {
 	sessions := make(map[string]*record)
 	if path == "" {
@@ -268,6 +278,8 @@ func load(path string) map[string]*record {
 	if err == nil {
 		_ = json.Unmarshal(raw, &sessions) // unreadable: start empty
 	}
+
+	maps.DeleteFunc(sessions, func(_ string, rec *record) bool { return !isTitle(rec.Title) })
 
 	return sessions
 }

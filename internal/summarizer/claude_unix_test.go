@@ -152,12 +152,11 @@ func TestSummarizeFailures(t *testing.T) {
 	}
 }
 
-func TestPlainResultIsAFallback(t *testing.T) {
+func TestAPlainResultIsNotATitle(t *testing.T) {
 	if got, err := parseAnswer(
-		[]byte(`{"is_error":false,"result":"Plain title"}`),
-	); err != nil ||
-		got != "Plain title" {
-		t.Errorf("got %q, %v", got, err)
+		[]byte(`{"is_error":false,"result":"I appreciate the instruction, but I cannot see the image"}`),
+	); err == nil {
+		t.Errorf("prose without structured_output became %q", got)
 	}
 }
 
