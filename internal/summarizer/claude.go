@@ -70,6 +70,7 @@ func (c ClaudeCLI) Summarize(ctx context.Context, req Request) (string, error) {
 	cmd.Dir = os.TempDir() // no project directory for it to read
 	cmd.Env = childEnv()
 	cmd.WaitDelay = 5 * time.Second
+	cmd.SysProcAttr = hidden()
 
 	out, err := cmd.Output()
 	if errors.Is(err, exec.ErrNotFound) {

@@ -34,6 +34,9 @@ it: `Title()` returns the cached title and queues the session when it is due.
   `claude-titles.json`, so a bad title already on disk is dropped at start.
 - Prompts go on **stdin**, never argv. `HERDR_*` is stripped from the child's
   environment, and it runs in the temp dir.
+- Windows: the child starts with `CREATE_NO_WINDOW` (`proc_windows.go`). The
+  plugin runs detached with no console, so without it every call flashed a
+  console window in front of the user.
 - `FindClaude` looks past PATH (`~/.local/bin`, `~/.claude/local`, Homebrew):
   a plugin inherits the Herdr server's PATH, which often lacks the shell's.
 
